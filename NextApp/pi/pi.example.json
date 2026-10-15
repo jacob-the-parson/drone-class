@@ -1,0 +1,25 @@
+{
+  "level": "student",
+  "name": "drone-pi",
+  "pictures": false,
+  "lidar": {
+    "zero_offset_deg": null,
+    "mirrored": null,
+    "mount_measured": false,
+    "ignore_within_m": 0.0,
+    "no_return": "unknown"
+  },
+  "camera": {
+    "horizontal_fov_deg": null
+  },
+  "autopilot": {
+    "device": "/dev/serial0",
+    "baud": 57600,
+    "share_position": false
+  },
+  "limits": {
+    "max_speed_ms": 0.5,
+    "max_yaw_rate_dps": 30.0,
+    "keep_distance_m": 2.0
+  }
+}
