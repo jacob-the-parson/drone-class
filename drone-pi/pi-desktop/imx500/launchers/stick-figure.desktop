@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Stick Figure Tracker
+Comment=Turns people into stick figures
+Exec=/home/teacher-admin/Desktop/imx500/stock/run-stick-figure.sh
+Icon=/home/teacher-admin/Desktop/imx500/launchers/stick-figure.png
+Terminal=true
+Categories=Education;
+StartupNotify=false

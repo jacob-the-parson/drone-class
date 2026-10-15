@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Precise Body Tracker
+Comment=Tracks several people at once
+Exec=/home/teacher-admin/Desktop/imx500/stock/run-body-tracker-pro.sh
+Icon=/home/teacher-admin/Desktop/imx500/launchers/body-tracker-pro.png
+Terminal=true
+Categories=Education;
+StartupNotify=false

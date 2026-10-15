@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=LiDAR Radar
+Comment=See what the 360-degree LiDAR sees
+Exec=/home/teacher-admin/Desktop/YahboomLidar/ours/run-lidar-radar.sh
+Icon=/home/teacher-admin/Desktop/YahboomLidar/launchers/lidar-radar.png
+Terminal=true
+Categories=Education;
+StartupNotify=false

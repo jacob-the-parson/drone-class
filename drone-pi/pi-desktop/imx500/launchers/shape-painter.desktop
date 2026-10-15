@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Shape Painter
+Comment=Colours in the exact shape of each object
+Exec=/home/teacher-admin/Desktop/imx500/stock/run-shape-painter.sh
+Icon=/home/teacher-admin/Desktop/imx500/launchers/shape-painter.png
+Terminal=true
+Categories=Education;
+StartupNotify=false

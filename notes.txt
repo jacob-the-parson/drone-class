@@ -1,0 +1,144 @@
+# Orientation Brief — Read This First
+
+You are joining an in-progress build. This document tells you what the project is, what has already been decided, and the rules you must work under. Read `00-hardware-manifest.md` alongside it.
+
+---
+
+## 1. What this is
+
+A custom quadcopter built for a client who runs an educational program. The aircraft is a teaching platform, not a product.
+
+**Students are aged 9–15.** The curriculum covers manual flight, autopilot missions, live video with a laptop HUD, a Raspberry Pi companion computer, AI object detection, tracking and colour identification, custom object learning, and 360° LiDAR mapping.
+
+**The teaching arc:** students watch the base aircraft fly → disassemble it → rebuild it → re-validate it → then install the smart package.
+
+This arc has real engineering consequences. Every component must be documented well enough that a child can take it apart and put it back together, and every configuration step must be explainable. "It works, don't touch it" is not an acceptable outcome.
+
+---
+
+## 2. Client ground rules — non-negotiable
+
+> **"Do not guess an electrical pinout or silently change the architecture. Document any recommended change and the reason before implementing it."**
+
+That is verbatim and standing. In practice:
+
+- **Never guess a pinout.** Ring it out with a multimeter or cite a primary source.
+- **Never guess a parameter name or value.** If you don't know, say so and look it up in official documentation.
+- **Never change architecture silently.** Propose, document the reason, wait for a decision.
+- Prefer manufacturer documentation and datasheets over forum posts. Where they conflict, say so explicitly rather than picking one.
+
+---
+
+## 3. Firmware decision — SETTLED
+
+**The aircraft runs PX4 v1.16.0, as shipped from the factory. This is not being changed.**
+
+Rationale: the Pixhawk 6C ships with PX4 and the product is branded "PX4 Development Kit — X500 v2." Holybro's and PX4's own X500 V2 build guides apply directly. QGroundControl runs natively on both Windows and the client's Intel Mac, so one ground station covers both machines.
+
+**Ground station: QGroundControl only. Mission Planner has left the project.**
+
+### ⚠️ The most important thing to understand about this repo
+
+An earlier phase of this project planned to flash **ArduCopter**. A lot of existing notes, parameter plans and draft documentation are written in **ArduPilot parameter names**.
+
+**ArduPilot parameter names do not exist in PX4.** There is no compatibility layer and no translation table. Examples of names you may encounter in older material that are *invalid here*:
+
+`SERIAL1_PROTOCOL` · `SERIAL2_BAUD` · `BRD_SAFETY_DEFLT` · `NTF_BUZZ_PIN` · `GPS_AUTO_SWITCH` · `FRAME_CLASS` · `INS_HNTCH_*` · `ATC_RAT_*` · `PRX_*` · `BATT_VOLT_MULT`
+
+If you meet one of these, treat it as **a decision that still stands but a parameter that must be re-derived from PX4 documentation.** Flag it. Do not invent the PX4 equivalent.
+
+Missions are the one portable thing — waypoint files are just coordinates and altitudes, and both ground stations read the same format.
+
+---
+
+## 4. Standing decisions
+
+Decisions carry a D-number and live in `build-log.md`.
+
+### Still valid under PX4
+
+| # | Decision |
+|---|---|
+| D-05 | Two SD cards, not BerryBoot or multi-boot |
+| D-06 | Raspberry Pi OS **Desktop**, not Desktop Full |
+| D-07 | SSH password authentication, not keys |
+| D-08 | Raspberry Pi Connect left disabled |
+| D-09 | **No subscription-licensed software anywhere in the handoff.** Build-wide. This is why the project uses TigerVNC rather than RealVNC, and why Parallels is not an option on the Mac. |
+| D-10 | The flight card also runs Trixie, superseding the spec's Bookworm |
+
+### Superseded by the PX4 decision
+
+| # | Was | Now |
+|---|---|---|
+| D-01 | Flash ArduCopter over factory PX4 | **Dead.** Keeping factory PX4. |
+| D-02 | All firmware flashing from Mission Planner | **Dead.** QGroundControl, and no reflash needed. |
+
+### Intent survives, parameter must be re-derived
+
+| # | Intent | Note |
+|---|---|---|
+| D-03 | No on-aircraft safety switch | Was `BRD_SAFETY_DEFLT=0`. PX4 equivalent **unknown — look it up.** |
+| D-04 | Buzzer on a spare FMU PWM output | Was `NTF_BUZZ_PIN`. PX4 equivalent **unknown — look it up.** |
+
+---
+
+## 5. Current state
+
+### Done
+- Pixhawk 6C factory parameter backup saved
+- Pi student card fully built: OS, camera, LiDAR SDK, VNC, all verified working
+- LiDAR bring-up complete, including the SH-variant settings that differ from the datasheet
+- IMX500 verified: 23 models present, MobileNet SSD person detection running
+- `ai_camera_lab.py` written — 507 lines, compiles clean, **not yet tested on hardware**
+- Claude Code installed on the Windows PC (v2.1.281)
+
+### Immediate next steps
+1. **LiDAR hand test** — establish which physical direction is 0°, and whether on-screen rotation is mirrored. Blocks final mounting.
+2. **Get `ai_camera_lab.py` onto the Pi and GUI-test it** over VNC. Test order: Object Finders "The all-rounder" → Body Trackers "Stick figure tracker" → `inputtensoronly` → any Name Guesser. The last one proves the examples-repo install.
+3. **Report the real picamera2-examples path** on this Pi — roughly 17 of the 23 models need it.
+4. **Confirm the open hardware questions** in the manifest: PM02 variant, GPS identity, receiver model, battery, whether the HM30 is still in scope.
+5. **Read the board UID** and the "Custom FW Ver" field from QGC (Analyze → MAVLink Inspector → `AUTOPILOT_VERSION`).
+
+### Known open items
+- Remote ID and FAA registration — aircraft is over 250 g
+- DHCP reservation so the Pi stays at `192.168.0.130`
+- Flight card build (Lite + Trixie; needs `sudo apt install python3-picamera2 --no-install-recommends`)
+- Video overlay strategy: render on the Pi (no hardware encoder, 720p30 target) vs send detection JSON to the laptop
+- ROS 2 path — Docker vs a third Ubuntu card. Note that obstacle avoidance may not need ROS at all.
+- Prop guards, LiPo-safe storage, spare props, vibration isolation
+- HM30 8-pin-to-RJ45 adapter cables
+- Travel router for classroom use
+- `.desktop` launcher still hardcodes `/home/teacher-admin/`
+
+---
+
+## 6. Hard rules — things that have already gone wrong
+
+- **Never toggle Wayland ↔ X11 in `raspi-config`** to troubleshoot VNC. Recovery is a full reflash.
+- **Never paste large files over SSH.** Large pastes have truncated before. Use `scp`, then verify with `python3 -m py_compile`.
+- **Do not put the flight controller under agentic control.** Claude Code may read, diff and summarise `.params` files — they're plain text. It must not drive the board over MAVLink. That fights QGC for the serial port and puts write access to flight parameters inside an automated loop. The flight controller stays under direct human control through QGroundControl.
+- **Do not reconfigure the LiDAR.** Bring-up was hard-won. The settings in the manifest are correct for this specific unit.
+- **One tool on the serial port at a time.** Close QGC before anything else touches the board.
+
+---
+
+## 7. Camera models — quick reference
+
+23 models in five teaching groups:
+
+| Group | Count | Type |
+|---|---|---|
+| Object Finders | 4 | Detection |
+| Name Guessers | 15 | Classification |
+| Body Trackers | 2 | Pose |
+| Shape Painters | 1 | Segmentation (deeplabv3plus) |
+| AI's-Eye View | 1 | `inputtensoronly` |
+
+Runs from the Pi desktop or VNC — **not** over plain SSH:
+```bash
+rpicam-hello -t 0s --post-process-file /usr/share/rpi-camera-assets/imx500_mobilenet_ssd.json
+```
+
+Expected non-bugs: 10–30 s freeze when a model first loads; Qt/Wayland warnings on stderr.
+
+Teaching notes worth keeping: `htop` during inference shows the Pi nearly idle — the best available demonstration of why the IMX500 was chosen. Classification models let students race `squeezenet1.0` against `resnet18` on the same object. `_pp` means post-processing on-chip. `efficientnet_bo` is B-zero, not a typo.

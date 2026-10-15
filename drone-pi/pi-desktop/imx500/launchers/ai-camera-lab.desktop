@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=AI Camera Lab
+Comment=Pick any AI model and watch the camera run it
+Exec=/home/teacher-admin/Desktop/imx500/ours/run-ai-camera-lab.sh
+Icon=/home/teacher-admin/Desktop/imx500/launchers/ai-camera-lab.png
+Terminal=false
+Categories=Education;
+StartupNotify=false

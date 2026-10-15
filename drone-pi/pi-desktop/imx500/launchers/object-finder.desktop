@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Object Finder
+Comment=Boxes and names around things the camera knows
+Exec=/home/teacher-admin/Desktop/imx500/stock/run-object-finder.sh
+Icon=/home/teacher-admin/Desktop/imx500/launchers/object-finder.png
+Terminal=true
+Categories=Education;
+StartupNotify=false

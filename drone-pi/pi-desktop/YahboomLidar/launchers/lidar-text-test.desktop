@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=LiDAR Text Test
+Comment=The makers own test program, text only
+Exec=/home/teacher-admin/Desktop/YahboomLidar/stock/run-lidar-text-test.sh
+Icon=/home/teacher-admin/Desktop/YahboomLidar/launchers/lidar-text-test.png
+Terminal=true
+Categories=Education;
+StartupNotify=false

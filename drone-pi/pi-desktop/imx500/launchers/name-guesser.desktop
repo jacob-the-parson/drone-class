@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Name Guesser
+Comment=One guess at what the whole picture is
+Exec=/home/teacher-admin/Desktop/imx500/stock/run-name-guesser.sh
+Icon=/home/teacher-admin/Desktop/imx500/launchers/name-guesser.png
+Terminal=true
+Categories=Education;
+StartupNotify=false
